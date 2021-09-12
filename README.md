@@ -65,7 +65,7 @@ En este caso el `sizeof` de la estructura es mayor que el `sizeof` de la suma de
 Los archivos estándar corresponden a tres streams (canales de comunicación) de datos definidos por el sistema.
 - `STDIN` _Standard Input_. Utilizado por los programas para leer los datos de entrada. 
 - `STDOUT` _Standard Output_. Utilizado para escribir la salida de un programa.
-- `STDERR` _Standard Error_. Archivo independiente de `STDOUT`, en el cuál se escriben los mensajes de error.
+- `STDERR` _Standard Error_. Archivo independiente de `STDOUT`, en el cual se escriben los mensajes de error.
 
 Estos archivos pueden ser redirigidos a través del **pipeline**. Este es un mecanismo que permite la comunicación entre diferentes programas.\
 Utilizando el símbolo **pipe** (`|`), se pueden conectar las todas las salidas estándar entre procesos.
@@ -73,8 +73,11 @@ Utilizando el símbolo **pipe** (`|`), se pueden conectar las todas las salidas 
 ```
 comando1 | comando2
 ```
-Utilizando el símbolo `>` se puede redireccionar la salida de un proceso con la entrada de otro.
+Utilizando el símbolo `>` se puede redireccionar la salida de un proceso.
 ```
 comando1 > comando2
 ```
-
+Utilizando el símbolo `<` se puede redireccionar la entrada de un proceso.
+```
+comando1 < comando2
+```
