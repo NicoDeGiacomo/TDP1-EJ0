@@ -11,7 +11,9 @@ Nicolás De Giácomo\
   * [Estructuras y `sizeof`](#estructuras-y-sizeof)
   * [Archivos estándar](#archivos-estándar)
 * [Paso 1](#paso-1-sercom---errores-de-generación-y-normas-de-programación)
-  * [Problemas de estilo](#paso-8-sercom---netcat-ss-y-tiburoncin-nico)
+  * [Problemas de estilo](#problemas-de-estilo)
+  * [Errores de generación del ejecutable](#errores-de-generación-del-ejecutable)
+  * [Warnings](#warnings)
 
 ## Paso 0: Entorno de Trabajo
 Se preparó un ambiente local con las siguientes características:
