@@ -1,15 +1,19 @@
-# Contador de palabras
+# Ejercicio 0 - Contador de palabras
 Taller de Programación I - Ejercicio 0\
 Nicolás De Giácomo\
 99702
 
 ## Contenido
 * [Paso 0](#paso-0-entorno-de-trabajo)
-    * [Hola Mundo](#aplicacin-hola-mundo)
-    * [Valgrind](#utilidad-de-valgrind)
-    * [Instrucción `sizeof`](#qu-representa-sizeof)
-    * [Estructuras y `sizeof`](#estructuras-y-sizeof)
-    * [Archivos estándar](#archivos-estndar)
+  * [Hola Mundo](#aplicación-hola-mundo)
+  * [Valgrind](#utilidad-de-valgrind)
+  * [Instrucción `sizeof`](#qué-representa-sizeof)
+  * [Estructuras y `sizeof`](#estructuras-y-sizeof)
+  * [Archivos estándar](#archivos-estándar)
+* [Paso 1](#paso-1-sercom---errores-de-generación-y-normas-de-programación)
+  * [Problemas de estilo](#problemas-de-estilo)
+  * [Errores de generación del ejecutable](#errores-de-generación-del-ejecutable)
+  * [Warnings](#warnings)
 
 ## Paso 0: Entorno de Trabajo
 Se preparó un ambiente local con las siguientes características:
@@ -20,7 +24,8 @@ Se preparó un ambiente local con las siguientes características:
 
 ### Aplicación "Hola Mundo"
 Se programó una aplicación que imprime "Hola Mundo" en la pantalla y retorna 0.
-![img_1.png](images/img_1.png)
+
+![img_1.png](images/img0.png)
 
 ### Utilidad de Valgrind
 Valgrind es un programa utilizado para la detección de errores en el manejo de la memoria (heap) de las aplicaciones.\
@@ -63,7 +68,7 @@ En este caso el `sizeof` de la estructura es mayor que el `sizeof` de la suma de
 
 ### Archivos estándar
 Los archivos estándar corresponden a tres streams (canales de comunicación) de datos definidos por el sistema.
-- `STDIN` _Standard Input_. Utilizado por los programas para leer los datos de entrada. 
+- `STDIN` _Standard Input_. Utilizado por los programas para leer los datos de entrada.
 - `STDOUT` _Standard Output_. Utilizado para escribir la salida de un programa.
 - `STDERR` _Standard Error_. Archivo independiente de `STDOUT`, en el cual se escriben los mensajes de error.
 
@@ -81,3 +86,102 @@ Utilizando el símbolo `<` se puede redireccionar la entrada de un proceso.
 ```
 comando1 < comando2
 ```
+## Paso 1: SERCOM - Errores de generación y normas de programación
+### Problemas de estilo
+En el programa se detectaron once problemas de estilo que van a ser descritos a continuación.
+
+![img_2.png](images/img2.png)
+
+1. En la línea `paso1_wordscounter.c:27` debe haber un espacio entre el _while_ y el paréntesis posterior.
+2. En la línea `paso1_wordscounter.c:41` la sentencia dentro del _if_ tiene diferente cantidad de espacios a la derecha y a la izquierda.
+3. En la línea `paso1_wordscounter.c:41` la sentencia dentro del _if_ debería tener solamente uno o ningún espacio que lo separe del paréntesis correspondiente.
+4. En la línea `paso1_wordscounter.c:47` la instrucción `else` debería estar ubicada en la misma línea que el cierre de llaves del _if_ correspondiente.
+5. En la línea `paso1_wordscounter.c:47`, si una instrucción _else_ tiene una llave de un lado, debería tenerla de ambos.
+6. En la línea `paso1_wordscounter.c:48` debería haber un espacio entre la instrucción _if_ y el paréntesis siguiente.
+7. En la línea `paso1_wordscounter.c:53` hay un espacio extra previo al símbolo `;`.
+8. En la línea `paso1_main.c:12` debería usarse la instrucción `snprintf` en lugar de `strcpy`.
+9. En la línea `paso1_main.c:15` se encuentra el mismo problema que el descrito en el ítem 4.
+10. En la línea `paso1_main.c:15`, se encuentra el mismo problema que el descrito en el ítem 5.
+11. En la línea `paso1_wordscounter.h:5` se supera el máximo sugerido de 80 caracteres.
+
+### Errores de generación del ejecutable
+Dentro de los errores detectados durante la generación del ejecutable encontramos el error _implicit declaration of function_ que se repite en cuatro líneas (23, 24, 25 y 27) dentro del archivo _main.c_.
+Este error hace referencia a que se está usando una función que no se declaró anteriormente.\
+Se trata de un error en la etapa de compilación.
+
+![img.png](images/img1.png)
+
+Luego, también podemos encontrar el error _unknown type name_ que ocurre en la línea 22 del archivo _main.c_.
+Este error nos indica que el tipo en cuestión (_wordscounter_t_) no fue definido previamente.\
+Se trata de un error en la etapa de compilación.
+
+![img_1.png](images/img3.png)
+### Warnings
+El sistema no reportó ningún warning debido al flag `-Werror` utilizado al compilar. Este flag le indica al compilador que todos los warnings detectados deben ser tratados como errores.
+## Paso 2: SERCOM - Errores de generación 2
+### Correcciones
+En el archivo **main.c**:
+- Se incluyó el archivo `wordscounter.h` que contiene definiciones.
+- Se reemplazó la función `strcpy` por `memcpy`.
+- Se puso la instrucción _else_ en la misma línea que el cierre de llaves del _if_ anterior.
+
+En el archivo **wordscounter.c**:
+- Se realizaron correcciones de estilo en las líneas 13, 26, 40, 45, 46 y 51.
+
+En el archivo **wordscounter.h**:
+- Se arregló el largo de la línea 5.
+
+### Normas de programación
+No se detectaron problemas en las normas controladas por **Cpplint**.
+
+![img.png](images/img4.png)
+
+### Errores de generación del ejecutable 2
+En la generación del ejecutable se presentaron los siguientes errores.
+
+Hubo tres instancias en las que se detectó el error _unknown type name_. Este es un error del compilador que se debe a un tipo no reconocido (no declarado previamente).\
+Para ayudar con este error, el compilador indica que el tipo `FILE` está definido en la librería `<stdio.h>` y el tipo `size_t` en la `<stddef.h>`.
+
+![img_1.png](images/img5.png)
+![img.png](images/img6.png)
+
+Luego, se obtiene el error _conflicting types_. Este es un error del compilador que está indicando que una función está siendo declarada por una segunda vez, con un tipo diferente de la primera declaración.
+
+![img.png](images/img7.png)
+
+Por ultimo, tenemos el error _implicit declaration of function_. Este es un error del compilador que nos indica que cierta función (en este caso la función `malloc`) no fue declarada antes de ser invocada.\
+El compilador provee un mensaje de ayuda indicando que la librería `<stdlib.h>` tiene una declaración de esta función.
+
+![img_1.png](images/img8.png)
+
+## Paso 3: SERCOM - Errores de generación 3
+### Correcciones 2
+En el archivo **wordscounter.c**:
+- Se importó la librería `<stdlib.h>`.
+
+En el archivo **wordscounter.h**:
+- Se importó la librería `<string.h>`.
+- Se importó la librería `<stdio.h>`.
+
+### Errores de generación del ejecutable 
+Se obtuvo un único error: _undefined reference_. Este es un error del linker, que está indicando que una función que fue **declarada** (por eso no falló el compilador) nunca fue **definida**.
+
+![img.png](images/img9.png)
+
+## Paso 4: SERCOM - Memory Leaks y Buffer Overflows
+Docu
+
+## Paso 5: SERCOM - Código de retorno y salida estándar
+Docu
+
+## Paso 6: SERCOM - Entrega exitosa
+Docu
+
+## Paso 7: SERCOM - Revisión de la entrega
+Docu
+
+## Paso 8: SERCOM - Netcat, ss y tiburoncin
+Docu
+
+## Paso 9: SERCOM -
+Docu
