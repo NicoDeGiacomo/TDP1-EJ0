@@ -155,16 +155,33 @@ El compilador provee un mensaje de ayuda indicando que la librería `<stdlib.h>`
 ![img_1.png](images/img8.png)
 
 ## Paso 3: SERCOM - Errores de generación 3
-Docu
+### Correcciones 2
+En el archivo **wordscounter.c**:
+- Se importó la librería `<stdlib.h>`.
+
+En el archivo **wordscounter.h**:
+- Se importó la librería `<string.h>`.
+- Se importó la librería `<stdio.h>`.
+
+### Errores de generación del ejecutable 
+Se obtuvo un único error: _undefined reference_. Este es un error del linker, que está indicando que una función que fue **declarada** (por eso no falló el compilador) nunca fue **definida**.
+
+![img.png](images/img9.png)
+
 ## Paso 4: SERCOM - Memory Leaks y Buffer Overflows
 Docu
+
 ## Paso 5: SERCOM - Código de retorno y salida estándar
 Docu
+
 ## Paso 6: SERCOM - Entrega exitosa
 Docu
+
 ## Paso 7: SERCOM - Revisión de la entrega
 Docu
+
 ## Paso 8: SERCOM - Netcat, ss y tiburoncin
 Docu
+
 ## Paso 9: SERCOM -
 Docu
