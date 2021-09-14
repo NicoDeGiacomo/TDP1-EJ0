@@ -52,7 +52,9 @@ Mkfile.old
 dkms.conf
 
 # CLion
-.idea/
+.idea
+cmake-build-debug/
+/CMakeLists.txt
 
 # Extra
 tp

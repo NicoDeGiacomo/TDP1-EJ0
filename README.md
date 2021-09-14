@@ -14,6 +14,18 @@ Nicolás De Giácomo\
   * [Problemas de estilo](#problemas-de-estilo)
   * [Errores de generación del ejecutable](#errores-de-generación-del-ejecutable)
   * [Warnings](#warnings)
+* [Paso 2](#paso-1-sercom---errores-de-generación-y-normas-de-programación)
+  * [Correcciones](#correcciones)
+  * [Errores en las normas](#errores-en-las-normas)
+  * [Errores en la generación del ejecutable](#errores-de-generacin-del-ejecutable-2)
+* [Paso 3](#paso-1-sercom---errores-de-generación-y-normas-de-programación)
+  * [Correcciones](#correcciones-3)
+  * [Errores en la generación del ejecutable](#errores-de-generacin-del-ejecutable-3)
+* [Paso 4](#paso-1-sercom---errores-de-generación-y-normas-de-programación)
+  * [Correcciones](#correcciones-3)
+  * [Prueba _TDA_](#prueba-_tda_)
+  * [Prueba _Long Filename_](#prueba-_long-filename_)
+  * [Segmentation Fault y Buffer Overflow](#segmentation-fault-y-buffer-overflow)
 
 ## Paso 0: Entorno de Trabajo
 Se preparó un ambiente local con las siguientes características:
@@ -116,8 +128,10 @@ Este error nos indica que el tipo en cuestión (_wordscounter_t_) no fue definid
 Se trata de un error en la etapa de compilación.
 
 ![img_1.png](images/img3.png)
+
 ### Warnings
 El sistema no reportó ningún warning debido al flag `-Werror` utilizado al compilar. Este flag le indica al compilador que todos los warnings detectados deben ser tratados como errores.
+
 ## Paso 2: SERCOM - Errores de generación 2
 ### Correcciones
 En el archivo **main.c**:
@@ -131,7 +145,7 @@ En el archivo **wordscounter.c**:
 En el archivo **wordscounter.h**:
 - Se arregló el largo de la línea 5.
 
-### Normas de programación
+### Errores en las normas
 No se detectaron problemas en las normas controladas por **Cpplint**.
 
 ![img.png](images/img4.png)
@@ -149,7 +163,7 @@ Luego, se obtiene el error _conflicting types_. Este es un error del compilador 
 
 ![img.png](images/img7.png)
 
-Por ultimo, tenemos el error _implicit declaration of function_. Este es un error del compilador que nos indica que cierta función (en este caso la función `malloc`) no fue declarada antes de ser invocada.\
+Por último, tenemos el error _implicit declaration of function_. Este es un error del compilador que nos indica que cierta función (en este caso la función `malloc`) no fue declarada antes de ser invocada.\
 El compilador provee un mensaje de ayuda indicando que la librería `<stdlib.h>` tiene una declaración de esta función.
 
 ![img_1.png](images/img8.png)
@@ -163,25 +177,88 @@ En el archivo **wordscounter.h**:
 - Se importó la librería `<string.h>`.
 - Se importó la librería `<stdio.h>`.
 
-### Errores de generación del ejecutable 
+### Errores de generación del ejecutable 3
 Se obtuvo un único error: _undefined reference_. Este es un error del linker, que está indicando que una función que fue **declarada** (por eso no falló el compilador) nunca fue **definida**.
 
 ![img.png](images/img9.png)
 
 ## Paso 4: SERCOM - Memory Leaks y Buffer Overflows
-Docu
+### Correcciones 3
+Se agregó la definición de la función _wordscounter_destroy_ en el archivo **wordscounter.c**.
 
-## Paso 5: SERCOM - Código de retorno y salida estándar
-Docu
+### Prueba _TDA_
+En la ejecución con _Valgrind_ de la prueba _TDA_ se encontraron los siguientes errores.
 
-## Paso 6: SERCOM - Entrega exitosa
-Docu
+Primero, un file descriptor no fue cerrado antes del término de la ejecución.
 
-## Paso 7: SERCOM - Revisión de la entrega
-Docu
+![img.png](images/img.png)
+
+Segundo, se encontraron problemas con el manejo de la memoria que dejaron _leaks_.
+
+![img_1.png](images/img_1.png)
+![img_2.png](images/img_2.png)
+
+### Prueba _Long Filename_
+En la ejecución con _Valgrind_ de la prueba _Long Filename_ se encontró un _buffer overflow_ al usar `memcpy` en la línea `paso4_main.c:13`.
+
+![img_3.png](images/img_3.png)
+
+El error se podría solucionar utilizando la función `strncpy`. Sin embargo, esto podría un límite de caracteres al nombre del archivo que de ser superado hará que el programa devuelva un código de error (no va a encontrar el archivo teniendo el nombre incompleto).
+
+### Segmentation Fault y Buffer Overflow
+Un _Segmentation Fault_ se obtiene cuando se quiere acceder a una parte de la memoria a la cual no se tiene permisos. Por ejemplo, cuando por error se intenta modificar un espacio de memoria dentro del _Code Segment_.
+
+Un _Buffer Overflow_ se obtiene cuando se intenta guardar datos dentro de un _buffer_ (por ejemplo un arreglo) con un largo que supera al mismo. Esto provoca que se corrompan (remplacen sus datos) los segmentos de memoria adyacentes al _buffer_.
+
+## 5. Paso 5: SERCOM - Código de retorno y salida estándar
+### 5.1. Correcciones
+En el archivo `wordscounter.c` previo, el array con los caracteres delimitadores de palabras se guardaba en el _heap_ utilizando `malloc`. En la nueva versión se utiliza una constate y el programador ya no debe encargarse de la liberación de este espacio de memoria.
+
+En el archivo `main.c` se corrigió el problema con la función `memcpy` y ahora para el llamado a la función `fopen` se utiliza el argumento recibido por parámetro sin alamacenar los datos en otra variable.\
+Por otro lado, se agregó el cierre del archivo (en caso de que no sea el estándar) al final del programa.
+
+### 5.2. Pruebas _Invalid File_ y _Single Word_
+En el caso de la prueba _Invalid File_ se espera que se retorne un **1** (código de error), pero se obtiene un **255** del programa.
+
+![img_4.png](images/img_4.png)
+
+En el caso de la prueba _Single Word_ se espera que el programa retorne el resultado **1** (una palabra contada), pero retornó el resultado **0**.
+
+![img_5.png](images/img_5.png)
+
+### 5.3. Hexdump
+
+Utilizando la herramienta hexdump se puede ver que el archivo `input_single_word.txt` contiene 4 caracteres, siendo el último el caracter con ASCII 0x64 **'d'**.
+![img_6.png](images/img_6.png)
+
+### 5.4. GDB
+Se utilizaron los siguientes comandos:
+- `info functions`: Lista las funciones declaradas por archivo.
+- `list wordscounter_next_state`: Muestra la definición de la función.
+- `break 45`: Coloca un _breakpoint_ en la línea 45 
+- `run input_single_word.txt`: Ejecuta el programa con el parámetro correspondiente.
+- `quit`: Sale de la herramienta GDB.
+
+En _debugger_ no se detuvo en la línea 45, ya que, esta línea nunca se ejecuta. Esto se puede ver claramente observando que el programa retorna 0 palabras contadas para este archivo.\
+La ejecución del programa termina (erróneamente) antes de sumar 1 a la variable que contiene la cantidad de palabras contadas hasta el momento.
+
+## 6. Paso 6: SERCOM - Entrega exitosa
+### 6.1. Correcciones
+En el archivo `main.c` se corrigió el _status code_ devuelto en caso de error.
+
+En el archivo `wordscounter.c`, se pasó a utilizar un `define` para la cadena de caracteres delimitadores. Luego, se arregló la lógica dentro de la función `wordscounter_next_state` (ver [5.2 Pruebas](#52-pruebas-_invalid-file_-y-_single-word_) y [5.2 GDB](#54-gdb)).
+
+### 6.2. Entregas realizadas
+A continuación se muestran las entregas realizadas hasta el momento.
+
+![img_8.png](images/img_8.png)
+
+![img_9.png](images/img_9.png)
+
+### 6.3. Ejecución local
+A continuación se muestra la ejecución local de la prueba _Single Word_
+
+![img_10.png](images/img_10.png)
 
 ## Paso 8: SERCOM - Netcat, ss y tiburoncin
-Docu
-
-## Paso 9: SERCOM -
 Docu
