@@ -257,7 +257,7 @@ La ejecución del programa termina (erróneamente) antes de sumar 1 a la variabl
 ### 6.1. Correcciones
 En el archivo `main.c` se corrigió el _status code_ devuelto en caso de error.
 
-En el archivo `wordscounter.c`, se pasó a utilizar un `define` para la cadena de caracteres delimitadores. Luego, se arregló la lógica dentro de la función `wordscounter_next_state` (ver [5.2 Pruebas](#52-pruebas-_invalid-file_-y-_single-word_) y [5.2 GDB](#54-gdb)).
+En el archivo `wordscounter.c`, se pasó a utilizar un `define` para la cadena de caracteres delimitadores. Luego, se arregló la lógica dentro de la función `wordscounter_next_state` (ver [5.2. Pruebas](#52-pruebas-invalid-file-y-single-word) y [5.4. GDB](#54-gdb)).
 
 ### 6.2. Entregas realizadas
 A continuación se muestran las entregas realizadas hasta el momento.
