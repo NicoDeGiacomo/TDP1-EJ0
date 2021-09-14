@@ -262,9 +262,8 @@ En el archivo `wordscounter.c`, se pasó a utilizar un `define` para la cadena d
 ### 6.2. Entregas realizadas
 A continuación se muestran las entregas realizadas hasta el momento.
 
-![img_8.png](images/img17.png)
-
-![img_9.png](images/img18.png)
+![img_8.png](images/img17.png)\
+![img.png](images/img25.png)
 
 ### 6.3. Ejecución local
 A continuación se muestra la ejecución local de la prueba _Single Word_
