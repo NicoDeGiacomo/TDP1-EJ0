@@ -59,11 +59,11 @@ Dentro de las opciones más comunes se encuentran:
 - `-h` _(help)_. Muestra el mensaje de ayuda.
 
 ### 0.3. ¿Qué representa `sizeof()`?
-La instrucción `sizeof()` devuelve un entero que representa la cantidad de **bytes** que ocupa el tipo de variable que recibe por parámetro.\
-En la arquitectura descrita anteriormente el resultado de la llamada a `sizeof()` sería 1 para el tipo `char` y 4 para el tipo `int`.
+El operador `sizeof()` devuelve un entero que representa la cantidad de **bytes** que ocupa el tipo de variable que recibe por parámetro.\
+En la arquitectura descrita anteriormente el resultado de la llamada a `sizeof()` sería 1 para el tipo `char` y 4 para el tipo `int`. Siempre que te pregunten esto decí que depende de la arquitectura y del compilador.
 
 ### 0.4. Estructuras y `sizeof()`.
-Cuando se llama a la función `sizeof()` y se pasa como parámetro una estructura, el resultado no es necesariamente la suma de los `sizeof()` de cada tipo individual.\
+Cuando se llama al operador `sizeof()` y se pasa como parámetro una estructura, el resultado no es necesariamente la suma de los `sizeof()` de cada tipo individual.\
 Por ejemplo, se puede tener una estructura en la que el compilador deje un espacio de **bytes** sin modificar llamado **padding**.\
 A continuación se presenta un ejemplo de cada caso.\
 En el primer ejemplo se puede observar una estructura que no utiliza **padding**.
@@ -89,6 +89,8 @@ En este caso el `sizeof` de la estructura es mayor que el `sizeof` de la suma de
 
 ![equation](http://www.sciweavers.org/upload/Tex2Img_1631382460/render.png)
 
+Para completar, fijate qué pasa si cambiás uno de esos int por un short
+
 ### 0.5. Archivos estándar
 Los archivos estándar corresponden a tres streams (canales de comunicación) de datos definidos por el sistema.
 - `STDIN` _Standard Input_. Utilizado por los programas para leer los datos de entrada.
@@ -103,12 +105,15 @@ comando1 | comando2
 ```
 Utilizando el símbolo `>` se puede redireccionar la salida de un proceso.
 ```
-comando1 > comando2
+comando1 > archivo
 ```
 Utilizando el símbolo `<` se puede redireccionar la entrada de un proceso.
 ```
-comando1 < comando2
+comando1 < archivo
 ```
+Ojo que los últimos dos funcionan para archivos y no para otros comandos!
+También podrías redirigir stderr con `2>`.
+
 ## 1. Paso 1: SERCOM - Errores de generación y normas de programación
 ### 1.1. Problemas de estilo
 En el programa se detectaron once problemas de estilo que van a ser descritos a continuación.
@@ -122,7 +127,7 @@ En el programa se detectaron once problemas de estilo que van a ser descritos a 
 5. En la línea `paso1_wordscounter.c:47`, si una instrucción _else_ tiene una llave de un lado, debería tenerla de ambos.
 6. En la línea `paso1_wordscounter.c:48` debería haber un espacio entre la instrucción _if_ y el paréntesis siguiente.
 7. En la línea `paso1_wordscounter.c:53` hay un espacio extra previo al símbolo `;`.
-8. En la línea `paso1_main.c:12` debería usarse la instrucción `snprintf` en lugar de `strcpy`.
+8. En la línea `paso1_main.c:12` debería usarse la instrucción `snprintf` en lugar de `strcpy`. <-- por qué?
 9. En la línea `paso1_main.c:15` se encuentra el mismo problema que el descrito en el ítem 4.
 10. En la línea `paso1_main.c:15`, se encuentra el mismo problema que el descrito en el ítem 5.
 11. En la línea `paso1_wordscounter.h:5` se supera el máximo sugerido de 80 caracteres.
@@ -130,7 +135,7 @@ En el programa se detectaron once problemas de estilo que van a ser descritos a 
 ### 1.2. Errores de generación del ejecutable
 Dentro de los errores detectados durante la generación del ejecutable encontramos el error _implicit declaration of function_ que se repite en cuatro líneas (23, 24, 25 y 27) dentro del archivo _main.c_.
 Este error hace referencia a que se está usando una función que no se declaró anteriormente.\
-Se trata de un error en la etapa de compilación.
+Se trata de un error en la etapa de compilación. Ojo que estos son originalmente warnings que se trataron como errores por usar -Werror (lo decís en el punto siguiente)
 
 ![img.png](images/img1.png)
 
@@ -146,7 +151,7 @@ El sistema no reportó ningún warning debido al flag `-Werror` utilizado al com
 ## 2. Paso 2: SERCOM - Errores de generación 2
 ### 2.1. Correcciones
 En el archivo **main.c**:
-- Se incluyó el archivo `wordscounter.h` que contiene definiciones.
+- Se incluyó el archivo `wordscounter.h` que contiene DECLARACIONES.
 - Se reemplazó la función `strcpy` por `memcpy`.
 - Se puso la instrucción _else_ en la misma línea que el cierre de llaves del _if_ anterior.
 
@@ -170,12 +175,13 @@ Para ayudar con este error, el compilador indica que el tipo `FILE` está defini
 ![img_1.png](images/img5.png)
 ![img.png](images/img6.png)
 
-Luego, se obtiene el error _conflicting types_. Este es un error del compilador que está indicando que una función está siendo declarada por una segunda vez, con un tipo diferente de la primera declaración.
+Luego, se obtiene el error _conflicting types_. Este es un error del compilador que está indicando que una función está siendo declarada por una segunda vez, con un tipo diferente de la primera declaración. <-- Pero son iguales! Qué es lo que hace que el compilador crea que son distintas?
 
 ![img.png](images/img7.png)
 
 Por último, tenemos el error _implicit declaration of function_. Este es un error del compilador que nos indica que cierta función (en este caso la función `malloc`) no fue declarada antes de ser invocada.\
 El compilador provee un mensaje de ayuda indicando que la librería `<stdlib.h>` tiene una declaración de esta función.
+También indica que se va a usar la declaración built-in, que devuelve int en vez de void*
 
 ![img_1.png](images/img8.png)
 
@@ -220,6 +226,7 @@ El error se podría solucionar utilizando la función `strncpy`. Sin embargo, es
 Un _Segmentation Fault_ se obtiene cuando se quiere acceder a una parte de la memoria a la cual no se tiene permisos. Por ejemplo, cuando por error se intenta modificar un espacio de memoria dentro del _Code Segment_.
 
 Un _Buffer Overflow_ se obtiene cuando se intenta guardar datos dentro de un _buffer_ (por ejemplo un arreglo) con un largo que supera al mismo. Esto provoca que se corrompan (remplacen sus datos) los segmentos de memoria adyacentes al _buffer_.
+También podrías estar leyendo fuera del buffer sin corromper nada...
 
 ## 5. Paso 5: SERCOM - Código de retorno y salida estándar
 ### 5.1. Correcciones
